@@ -76,4 +76,23 @@
         return 0.5 * (1 + erf(z / Math.sqrt(2)));
       }
 
-      // p-value (
+      // p-value (two-tailed)
+      const pValue = 2 * (1 - phi(Math.abs(z)));
+
+      // determine alpha and statSig
+      const alpha = 1 - confPct/100;
+      const statSig = pValue < alpha;
+
+      // render results
+      document.getElementById('result').innerHTML = `
+        <p><strong>pA:</strong> ${pA.toFixed(4)} &nbsp; 
+           <strong>pB:</strong> ${pB.toFixed(4)}</p>
+        <p><strong>z-score:</strong> ${z.toFixed(4)} &nbsp; 
+           <strong>p-value:</strong> ${pValue.toFixed(4)}</p>
+        <p><strong>Stat Sig:</strong> ${statSig}</p>
+        <p><small>Using α = ${alpha.toFixed(4)} (for ${confPct}% confidence)</small></p>
+      `;
+    }
+  </script>
+</body>
+</html>
