@@ -9,22 +9,22 @@
     <h3>Statistical Significance Calculator</h3>
 
     <label>
-      Variant A: Total Observations
+      Test: Total Observations
       <input id="nA" type="number" min="0" value="33612"/>
     </label><br/>
 
     <label>
-      Variant A: Successes
+      Test: Successes
       <input id="xA" type="number" min="0" value="341"/>
     </label><br/>
 
     <label>
-      Variant B: Total Observations
+      Control: Total Observations
       <input id="nB" type="number" min="0" value="29033"/>
     </label><br/>
 
     <label>
-      Variant B: Successes
+      Control: Successes
       <input id="xB" type="number" min="0" value="283"/>
     </label><br/>
 
@@ -85,8 +85,8 @@
 
       // render results
       document.getElementById('result').innerHTML = `
-        <p><strong>pA:</strong> ${pA.toFixed(4)} &nbsp; 
-           <strong>pB:</strong> ${pB.toFixed(4)}</p>
+        <p><strong>Test pA:</strong> ${pA.toFixed(4)} &nbsp; 
+           <strong>Control pB:</strong> ${pB.toFixed(4)}</p>
         <p><strong>z-score:</strong> ${z.toFixed(4)} &nbsp; 
            <strong>p-value:</strong> ${pValue.toFixed(4)}</p>
         <p><strong>Stat Sig:</strong> ${statSig}</p>
