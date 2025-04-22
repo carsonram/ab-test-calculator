@@ -2,23 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Statistical Significance Calculator</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 2rem; }
-    label { display: block; margin-top: 1rem; }
-    input { width: 100%; padding: 0.5rem; margin-top: 0.25rem; }
-    button { margin-top: 1.5rem; padding: 0.75rem; }
-  </style>
+  <title>A/B Test Significance Calculator</title>
 </head>
 <body>
-  <h3>Statistical Significance Calculator</h3>
-  <label>Variant A: Total Observations <input id="nA" type="number" min="0" value="33612" /></label>
-  <label>Variant A: Successes <input id="xA" type="number" min="0" value="341" /></label>
-  <label>Variant B: Total Observations <input id="nB" type="number" min="0" value="29033" /></label>
-  <label>Variant B: Successes <input id="xB" type="number" min="0" value="283" /></label>
-  <button onclick="calculate()">Calculate</button>
-  <div id="result" style="margin-top:1rem;"></div>
+  <div>
+    <h3>Statistical Significance Calculator</h3>
+
+    <label>
+      Variant A: Total Observations
+      <input id="nA" type="number" min="0" value="33612"/>
+    </label><br/>
+
+    <label>
+      Variant A: Successes
+      <input id="xA" type="number" min="0" value="341"/>
+    </label><br/>
+
+    <label>
+      Variant B: Total Observations
+      <input id="nB" type="number" min="0" value="29033"/>
+    </label><br/>
+
+    <label>
+      Variant B: Successes
+      <input id="xB" type="number" min="0" value="283"/>
+    </label><br/>
+
+    <label>
+      Confidence Level (%)
+      <input id="confidence" type="number" min="50" max="99.999" step="0.1" value="95"/>
+    </label><br/><br/>
+
+    <button onclick="calculate()">Calculate</button>
+
+    <div id="result" style="margin-top:1rem;"></div>
+  </div>
 
   <script>
     function calculate() {
@@ -26,13 +44,25 @@
       const xA = +document.getElementById('xA').value;
       const nB = +document.getElementById('nB').value;
       const xB = +document.getElementById('xB').value;
-      if (!nA || !nB) { alert('Please enter both group sizes'); return; }
-      const pA = xA / nA, pB = xB / nB;
+      const confPct = +document.getElementById('confidence').value;
+
+      if (!nA || !nB) {
+        alert('Please enter both group sizes');
+        return;
+      }
+
+      // conversion rates
+      const pA = xA / nA;
+      const pB = xB / nB;
+
+      // pooled rate & SE
       const p  = (xA + xB) / (nA + nB);
       const SE = Math.sqrt(p * (1 - p) * (1/nA + 1/nB));
+
+      // z-score
       const z  = (pA - pB) / SE;
 
-      // Error function approximation for CDF
+      // standard normal CDF via erf
       function erf(x) {
         const a1=0.254829592, a2=-0.284496736, a3=1.421413741;
         const a4=-1.453152027, a5=1.061405429, p=0.3275911;
@@ -42,15 +72,8 @@
         const y = 1 - ((((a5*t + a4)*t + a3)*t + a2)*t + a1) * t * Math.exp(-x*x);
         return sign * y;
       }
+      function phi(z) {
+        return 0.5 * (1 + erf(z / Math.sqrt(2)));
+      }
 
-      function phi(z) { return 0.5 * (1 + erf(z / Math.sqrt(2))); }
-
-      const pValue = 2 * (1 - phi(Math.abs(z)));
-      document.getElementById('result').innerHTML = `
-        <p><strong>pA:</strong> ${pA.toFixed(4)} &nbsp; <strong>pB:</strong> ${pB.toFixed(4)}</p>
-        <p><strong>z-score:</strong> ${z.toFixed(4)} &nbsp; <strong>p-value:</strong> ${pValue.toFixed(4)}</p>
-      `;
-    }
-  </script>
-</body>
-</html>
+      // p-value (
